@@ -1,7 +1,6 @@
 import io
 
 from setuptools import setup
-from setuptools import find_packages
 
 with io.open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()

@@ -15,11 +15,12 @@ settipy.get("FOO")
 
 ## Features
 - Simple to use
-- supports command line and environment variables 
+- supports command line and environment variables
 - Support for types: str, int, bool
 - Singleton, makes it easy to use in program anywhere in the code-base
-- Supports help text with --help on the binary
+- Supports help text with --help
 - Ease of use in any environment examples: linux, docker, k8
+- Force program to be run with env or cli vars.
 
 
 ## Example
@@ -81,6 +82,17 @@ settipy.get_int("FOO")
 // boolean
 settipy.set_bool("FOO", True, "help text")
 settipy.get_bool("FOO")
+```
+
+## Var Should be set
+settipy supports different types.
+```python
+// string
+settipy.set("foshure", True, "handy message", should=True)
+```
+
+```$ python3 example.py --hamlet_too
+flag: foshure should be set by cli or env: should be set
 ```
 
 ## Install

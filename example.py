@@ -10,6 +10,9 @@ if __name__ == "__main__":
     # setting Booleans
     settipy.set_bool("hamlet", True, "to be or not to be?")
 
+    # Values that should be set by vars
+    # settipy.set_bool("foshure", True, "should be set by cli or env", should=True)
+
     # Run parse after the setting set.
     settipy.parse()
 
