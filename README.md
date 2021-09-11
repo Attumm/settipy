@@ -16,7 +16,7 @@ settipy.get("FOO")
 ## Features
 - Simple to use
 - supports command line and environment variables
-- Support for types: str, int, bool
+- Support for types: str, int, bool, list, dict
 - Singleton, makes it easy to use in program anywhere in the code-base
 - Supports help text with --help
 - Ease of use in any environment examples: linux, docker, k8
@@ -87,6 +87,13 @@ settipy.get_bool("FOO")
 // list
 settipy.set_list("FOO", [1, 2, 3], "help text", sep=".")
 settipy.get_list("FOO")
+
+dic = {
+   "foo": ["bar",],
+   "foo1": ["bar1", "bar2"]
+}
+settipy.set_dict("foodict", dic, "dict with lists", item_sep=";", key_sep=";", sep=",")
+settipy.get("foodict")
 ```
 
 ## Var Should be set

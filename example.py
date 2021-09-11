@@ -19,8 +19,15 @@ if __name__ == "__main__":
     # setting sep value is not needed defaults to ",".
     # settipy.set_list("abc", ["a", "b", "c"], "list of abc")
 
-    # cli equivalent `-abc a.b.c`
+    # cli equivalent of default `-abc a.b.c`
     settipy.set_list("abc", ["a", "b", "c"], "list of abc", sep=".")
+
+    # cli equivalent "foo:bar;foo1:bar1,bar2"
+    dic = {
+        "foo": ["bar",],
+        "foo1": ["bar1", "bar2"]
+    }
+    settipy.set_dict("foodict", dic, "dict with lists", item_sep=";", key_sep=";", sep=",")
 
     # Values that should be set by vars
     # settipy.set_bool("foshure", True, "should be set by cli or env", should=True)
@@ -34,6 +41,14 @@ if __name__ == "__main__":
     print("answer to the universe =", settipy.get("answer_to_the_universe"))
     print("to be or not to be? =", settipy.get("hamlet"))
     print("list of abc", settipy.get("abc"))
+    print("dict with lists", settipy.get("foodict"))
+
+    assert "default_value_for_foo_bar" == settipy.get("FOOBAR")
+    assert 42 == settipy.get_int("answer_to_the_universe")
+    assert True == settipy.get("hamlet")
+    assert ["a", "b", "c"] == settipy.get_list("abc")
+    assert dic == settipy.get("foodict")
+
 
 # $ python3 example.py --help
 # usage of example.py

@@ -21,9 +21,11 @@ class Settipy():
             "str": self._to_str,
             "int": self._to_int,
             "bool": self._truthiness,
-            "list": self._to_list
+            "list": self._to_list,
+            "dict": self._to_dict,
         }
         self.list_sep = {}
+        self.dict_seps = {}
         self.should_be_set = {}
 
     def _to_str(self, v, flag):
@@ -34,6 +36,14 @@ class Settipy():
 
     def _to_list(self, v, flag):
         return v.split(self.list_sep[flag])
+
+    def _to_dict(self, v, flag):
+        item_sep, key_sep, sep = self.dict_seps[flag]
+        d = {}
+        for item in v.split(item_sep):
+            key, values = item.split(key_sep)
+            d[key] = values.split(sep)
+        return d
 
     def _truthiness(self, v, flag):
         return v in self.truthy
@@ -62,6 +72,10 @@ class Settipy():
         self.list_sep[flag_name] = sep
         self._set(flag_name, default, message, "list", should)
 
+    def set_dict(self, flag_name, default, message, sep=",", key_sep=":", item_sep=";", should=False):
+        self.dict_seps[flag_name] = item_sep, key_sep, sep
+        self._set(flag_name, default, message, "dict", should)
+
     def get(self, k):
         return self.data[k]
 
@@ -72,6 +86,9 @@ class Settipy():
         return self.data[k]
 
     def get_list(self, k):
+        return self.data[k]
+
+    def get_dict(self, k):
         return self.data[k]
 
     def _get_env_var(self, flag):
