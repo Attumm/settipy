@@ -83,6 +83,11 @@ settipy.set_bool("FOO", True, "help text")
 settipy.get_bool("FOO")
 ```
 
+## Install
+```sh
+$ pip install settipy
+```
+
 ## License
 
 MIT
