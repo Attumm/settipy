@@ -19,12 +19,11 @@ if __name__ == "__main__":
     print("answer to the universe =", settipy.get_int("answer_to_the_universe"))
     print("to be or not to be? =", settipy.get_bool("hamlet"))
 
-
 # $ python3 example.py --help
 # usage of example.py
-#       -FOOBAR str default default_value_for_foo_bar
-#       	explain why something is foobar
-#       -answer_to_the_universe int default 42
-#       	explain why 42 is the answer to the universe
-#       -hamlet bool default True
-#       	to be or not to be?
+# 	-FOOBAR str - default: default_value_for_foo_bar
+# 		explain why something is foobar
+# 	-answer_to_the_universe int - default: 42
+# 		explain why 42 is the answer to the universe
+# 	-hamlet bool - default: True
+# 		to be or not to be?

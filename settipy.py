@@ -82,7 +82,7 @@ class Settipy():
             print(f"usage of {sys.argv[0]}")
             for flag, default in self.data.items():
                 type_, message = self.data_type[flag], self.messages[flag]
-                print(f"\t-{flag} {type_} default {default}")
+                print(f"\t-{flag} {type_} - default: {default}")
                 print(f"\t\t{message}")
             sys.exit()
 
