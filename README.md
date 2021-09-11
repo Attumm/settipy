@@ -92,7 +92,7 @@ settipy.set("foshure", True, "handy message", should=True)
 ```
 
 ```$ python3 example.py --hamlet_too
-flag: foshure should be set by cli or env: should be set
+flag: foshure handy message: should be set
 ```
 
 ## Install
