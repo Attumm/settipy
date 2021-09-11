@@ -17,38 +17,50 @@ class Settipy():
         self.data_type = {}
         self.messages = {}
         self.truthy = {"y", "yes", "true", ""}
-        self.casters = {"str": str, "int": int}
+        self.casters = {
+            "str": self._to_str,
+            "int": self._to_int,
+            "bool": self._truthiness,
+            "list": self._to_list
+        }
+        self.list_sep = {}
         self.should_be_set = {}
 
-    def _truthiness(self, v):
+    def _to_str(self, v, flag):
+        return str(v)
+
+    def _to_int(self, v, flag):
+        return int(v)
+
+    def _to_list(self, v, flag):
+        return v.split(self.list_sep[flag])
+
+    def _truthiness(self, v, flag):
         return v in self.truthy
 
     def _cast(self, v, flag):
         type_ = self.data_type[flag]
-        if type_ == "bool":
-            return self._truthiness(v)
-        return self.casters[type_](v)
+        return self.casters[type_](v, flag)
 
-    def set(self, flag_name, default, message, type_="str", should=False):
+    def _set(self, flag_name, default, message, type_, should):
         self.data[flag_name] = default
         self.data_type[flag_name] = type_
         self.messages[flag_name] = message
         if should:
             self.should_be_set[flag_name] = default
 
+    def set(self, flag_name, default, message, type_="str", should=False):
+        self._set(flag_name, default, message, type_, should)
+
     def set_int(self, flag_name, default, message, should=False):
-        self.data[flag_name] = int(default)
-        self.data_type[flag_name] = "int"
-        self.messages[flag_name] = message
-        if should:
-            self.should_be_set[flag_name] = default
+        self._set(flag_name, default, message, "int", should)
 
     def set_bool(self, flag_name, default, message, should=False):
-        self.data[flag_name] = default
-        self.data_type[flag_name] = "bool"
-        self.messages[flag_name] = message
-        if should:
-            self.should_be_set[flag_name] = default
+        self._set(flag_name, default, message, "bool", should)
+
+    def set_list(self, flag_name, default, message, sep=",", should=False):
+        self.list_sep[flag_name] = sep
+        self._set(flag_name, default, message, "list", should)
 
     def get(self, k):
         return self.data[k]
@@ -57,6 +69,9 @@ class Settipy():
         return self.data[k]
 
     def get_bool(self, k):
+        return self.data[k]
+
+    def get_list(self, k):
         return self.data[k]
 
     def _get_env_var(self, flag):

@@ -69,7 +69,8 @@ The priority order is as follows
 3. Default values
 
 ## Types
-settipy supports different types.
+settipy supports different types. It's possible to use the method "get".
+But to be more clear to the reader of the code you can add the type e.g "get_bool".
 ```python
 // string
 settipy.set("FOO", "default", "help text")
@@ -82,6 +83,10 @@ settipy.get_int("FOO")
 // boolean
 settipy.set_bool("FOO", True, "help text")
 settipy.get_bool("FOO")
+
+// list
+settipy.set_list("FOO", [1, 2, 3], "help text", sep=".")
+settipy.get_list("FOO")
 ```
 
 ## Var Should be set
