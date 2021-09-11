@@ -5,11 +5,11 @@ settings parses command line and environment variables on one line.
 And makes it available throughout the code base. Making using settings in your project as boring and unimportant as it should be.
 settings vars is as simple as:
 ```go
- settipy.set("FOO", "default value", "help text")
+settipy.set("FOO", "default value", "help text")
 ```
 getting vars out has the same level of complexity as setting the value.
 ```go
- settipy.get("FOO")
+settipy.get("FOO")
 ```
 
 
@@ -25,11 +25,11 @@ getting vars out has the same level of complexity as setting the value.
 ## Example
 example of how to use. More can be found in the [example_project](https://github.com/Attumm/settipy/blob/main/example.py)
 ```python
-    settipy.set("FOO", "default value", "handy help text")
+settipy.set("FOO", "default value", "handy help text")
 
-    settipy.parse()
+settipy.parse()
 
-    print("foo = ", settipy.get("FOOBAR"))
+print("foo = ", settipy.get("FOOBAR"))
 ```
 The above go will produce program that can be used as follows.
 get handy help text set in the above example on the same line.
