@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     # cli equivalent "foo:bar;foo1:bar1,bar2"
     dic = {
-        "foo": ["bar",],
+        "foo": ["bar"],
         "foo1": ["bar1", "bar2"]
     }
     settipy.set_dict("foodict", dic, "dict with lists", item_sep=";", key_sep=";", sep=",")
@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
     assert "default_value_for_foo_bar" == settipy.get("FOOBAR")
     assert 42 == settipy.get_int("answer_to_the_universe")
-    assert True == settipy.get("hamlet")
+    assert settipy.get("hamlet") is True
     assert ["a", "b", "c"] == settipy.get_list("abc")
     assert dic == settipy.get("foodict")
 
@@ -60,3 +60,5 @@ if __name__ == "__main__":
 # 		to be or not to be?
 # 	-abc list - default: ['a', 'b', 'c']
 # 		list of abc
+# 	-foodict dict - default: {'foo': ['bar'], 'foo1': ['bar1', 'bar2']}
+# 		dict with lists
