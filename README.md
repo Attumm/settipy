@@ -113,7 +113,7 @@ $ pip install settipy
 ```
 
 ## Future features
-```
+
 * add feature to print out all the values that are set at startup. to add to that passwords should not be shown.
 * options: input should be one of the options, or fail.
 * remove redundant data after parse has run. Every byte counts.
@@ -122,6 +122,7 @@ $ pip install settipy
 at the cli. This will allow for safer storing of passwords. Passwords are then just hashes in config. At runtime at the parse fase settipy will
 use the salt and pepper to decrypt the password. Since this will properly use external package the major version upgrade is needed. 1.0 will be requirement free.
 and 2.0 will start to use packages.
+* create dictionary interface
 
 
 ## License
