@@ -14,7 +14,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
 
-    version='1.2.3',
+    version='1.4.0',
     py_modules=['settipy'],
     license='MIT',
 
