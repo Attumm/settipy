@@ -31,6 +31,9 @@ class Settipy():
 
         self.test_mode = False
 
+    def __getitem__(self, key):
+        return self.data[key]
+
     def _to_str(self, v, flag):
         return str(v)
 
@@ -122,7 +125,7 @@ class Settipy():
             value, found = self._get_env_var(flag)
             if found:
                 self.should_be_set.pop(flag, None)
-                self.data[flag] =self._cast(value, flag)
+                self.data[flag] = self._cast(value, flag)
 
     def _handle_cli_vars(self):
         for flag in self.data.keys():

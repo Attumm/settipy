@@ -1,6 +1,5 @@
 import os
 import sys
-import time
 
 import unittest
 from unittest import mock
@@ -10,7 +9,7 @@ import importlib
 import settipy
 
 
-class TestAmounts(unittest.TestCase):
+class TestFeatures(unittest.TestCase):
     """
     Took over the testing style from the official argparse.
     https://github.com/python/cpython/blob/main/Lib/test/test_argparse.py#L182
@@ -33,6 +32,18 @@ class TestAmounts(unittest.TestCase):
         )
         setpy.parse()
         self.assertEqual(expected, setpy.get("FOOBAR"))
+
+    def test_happy_path_get_pythonic(self):
+        setpy = settipy.settipy
+
+        expected = "default value for foobar"
+        setpy.set(
+            flag_name="FOOBAR",
+            default=expected,
+            message="explain why something is foobar"
+        )
+        setpy.parse()
+        self.assertEqual(expected, setpy["FOOBAR"])
 
     def test_happy_path_env(self):
         setpy = settipy.settipy
@@ -100,7 +111,7 @@ class TestAmounts(unittest.TestCase):
                 setpy.parse()
                 self.assertEqual(expected, setpy.get("FOOBAR"))
 
-    def test_happy_path_var_not_set(self):
+    def test_var_not_set(self):
         setpy = settipy.settipy
 
         cli_value = "value_set_with_cli"
@@ -118,11 +129,11 @@ class TestAmounts(unittest.TestCase):
                     message="explain why something is foobar"
                 )
                 setpy.parse()
-                
+
                 with self.assertRaises(KeyError):
                     setpy.get(flag_name)
 
-    def test_happy_path_var_should_be_set(self):
+    def test_var_should_be_set(self):
         setpy = settipy.settipy
         setpy.test_mode = True
 
@@ -140,11 +151,11 @@ class TestAmounts(unittest.TestCase):
                     message="explain why something is foobar",
                     should=True
                 )
-                
+
                 with self.assertRaises(Exception):
                     setpy.parse()
 
-    def test_happy_path_var_should_be_of_options(self):
+    def test_var_should_be_of_options(self):
         setpy = settipy.settipy
         setpy.test_mode = True
 
@@ -162,7 +173,7 @@ class TestAmounts(unittest.TestCase):
                     message="explain why something is foobar",
                     options=["foo", "bar"],
                 )
-                
+
                 with self.assertRaises(Exception):
                     setpy.parse()
 
