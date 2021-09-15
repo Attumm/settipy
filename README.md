@@ -30,7 +30,7 @@ settipy.set("FOO", "default value", "handy help text")
 
 settipy.parse()
 
-print("foo = ", settipy["FOOBAR"])
+print("foo = ", settipy["FOO"])
 ```
 The above go will produce program that can be used as follows.
 get handy help text set in the above example on the same line.
