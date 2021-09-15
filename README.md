@@ -9,7 +9,7 @@ settipy.set("FOO", "default value", "help text")
 ```
 getting vars out has the same level of complexity as setting the value.
 ```go
-settipy.get("FOO")
+settipy["FOO"]
 ```
 
 
@@ -30,7 +30,7 @@ settipy.set("FOO", "default value", "handy help text")
 
 settipy.parse()
 
-print("foo = ", settipy.get("FOOBAR"))
+print("foo = ", settipy["FOOBAR"])
 ```
 The above go will produce program that can be used as follows.
 get handy help text set in the above example on the same line.
@@ -74,26 +74,26 @@ But to be more clear to the reader of the code you can add the type e.g "get_boo
 ```python
 // string
 settipy.set("FOO", "default", "help text")
-settipy.get("FOO")
+settipy["FOO"]
 
 // integer
 settipy.set_int("FOO", 42, "help text")
-settipy.get_int("FOO")
+settipy["FOO"]
 
 // boolean
 settipy.set_bool("FOO", True, "help text")
-settipy.get_bool("FOO")
+settipy["FOO"]
 
 // list
 settipy.set_list("FOO", [1, 2, 3], "help text", sep=".")
-settipy.get_list("FOO")
+settipy["FOO"]
 
 dic = {
    "foo": ["bar",],
    "foo1": ["bar1", "bar2"]
 }
 settipy.set_dict("foodict", dic, "dict with lists", item_sep=";", key_sep=";", sep=",")
-settipy.get("foodict")
+settipy["foodict"]
 ```
 
 ## Var Should be set
