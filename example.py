@@ -32,6 +32,11 @@ if __name__ == "__main__":
     # Values that should be set by vars
     # settipy.set_bool("foshure", True, "should be set by cli or env", should=True)
 
+    # Value that contains a password and should not be shown by startup print.
+    # to print variables at start up Either run the program with `--settipy-verbose` as
+    # cli argument or `settipy.parse(verbose=True)`
+    settipy.set("FOOPASS", "dev_password", "password for DB", password=True)
+
     # Run parse after the setting set.
     settipy.parse()
 

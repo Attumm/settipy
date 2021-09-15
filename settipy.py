@@ -13,6 +13,7 @@ class Settipy():
     """
     def __init__(self):
         self.parsed = False
+        self.print_at_startup = False
         self.data = {}
         self.data_type = {}
         self.messages = {}
@@ -28,6 +29,7 @@ class Settipy():
         self.dict_seps = {}
         self.should_be_set = {}
         self.options = {}
+        self.password_fields = {}
 
         self.test_mode = False
 
@@ -58,7 +60,7 @@ class Settipy():
         type_ = self.data_type[flag]
         return self.casters[type_](v, flag)
 
-    def _set(self, flag_name, default, message, type_, should, options):
+    def _set(self, flag_name, default, message, type_, should, options, password):
         self.data[flag_name] = default
         self.data_type[flag_name] = type_
         self.messages[flag_name] = message
@@ -66,23 +68,25 @@ class Settipy():
             self.should_be_set[flag_name] = default
         if options:
             self.options[flag_name] = set(options)
+        if password:
+            self.password_fields[flag_name] = True
 
-    def set(self, flag_name, default, message, type_="str", should=False, options=tuple()):
-        self._set(flag_name, default, message, type_, should, options)
+    def set(self, flag_name, default, message, type_="str", should=False, options=tuple(), password=False):
+        self._set(flag_name, default, message, type_, should, options, password)
 
-    def set_int(self, flag_name, default, message, should=False, options=tuple()):
-        self._set(flag_name, default, message, "int", should, options)
+    def set_int(self, flag_name, default, message, should=False, options=tuple(), password=False):
+        self._set(flag_name, default, message, "int", should, options, password)
 
-    def set_bool(self, flag_name, default, message, should=False, options=tuple()):
-        self._set(flag_name, default, message, "bool", should, options)
+    def set_bool(self, flag_name, default, message, should=False, options=tuple(), password=False):
+        self._set(flag_name, default, message, "bool", should, options, password)
 
-    def set_list(self, flag_name, default, message, sep=",", should=False, options=tuple()):
+    def set_list(self, flag_name, default, message, sep=",", should=False, options=tuple(), password=False):
         self.list_sep[flag_name] = sep
-        self._set(flag_name, default, message, "list", should, options)
+        self._set(flag_name, default, message, "list", should, options, password)
 
-    def set_dict(self, flag_name, default, message, sep=",", key_sep=":", item_sep=";", should=False, options=tuple()):
+    def set_dict(self, flag_name, default, message, sep=",", key_sep=":", item_sep=";", should=False, options=tuple(), password=False):
         self.dict_seps[flag_name] = item_sep, key_sep, sep
-        self._set(flag_name, default, message, "dict", should, options)
+        self._set(flag_name, default, message, "dict", should, options, password)
 
     def get(self, k):
         return self.data[k]
@@ -170,11 +174,23 @@ class Settipy():
                     print(f"flag: {flag} {value}: is not part of allowed options[")
         return succeded
 
-    def parse(self):
+    def _handle_print(self):
+        if self.print_at_startup or "--settipy-verbose" in sys.argv:
+            print(self.print_at_startup, "--settipy-verbose" in sys.argv)
+            print(f"starting {sys.argv[0]} with vars:")
+            for flag, default in self.data.items():
+                if not self.password_fields.get(flag):
+                    print(f"\t-{flag}: {default}")
+
+    def parse(self, verbose=False):
+        if verbose:
+            self.print_at_startup = True
+
         if self.parsed:
             raise Exception("There is a saying... If you're parsed you can't be parsed again")
 
         self._handle_help()
+        self._handle_print()
         self._handle_env_vars()
         self._handle_cli_vars()
         succeded = self._handle_should()

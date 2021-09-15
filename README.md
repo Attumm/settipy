@@ -107,6 +107,9 @@ settipy.set("foshure", True, "handy message", should=True)
 flag: foshure handy message: should be set
 ```
 
+## Print vars before startup
+Either run the program with `--settipy-verbose` as cli argument or `settipy.parse(verbose=True)`
+
 ## Install
 ```sh
 $ pip install settipy
@@ -114,7 +117,6 @@ $ pip install settipy
 
 ## Future features
 
-* add feature to print out all the values that are set at startup. to add to that passwords should not be shown.
 * remove redundant data after parse has run. Every byte counts.
 * conditional `should`, combinations of input create depenedencies for example -output_file_name could be needed if -mode is write_to_file
 * Add support for passwords. Password can be stored as hashes. With salt and pepper. Pepper can be stored in envirnoment and the salt given
