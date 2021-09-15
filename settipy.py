@@ -27,6 +27,9 @@ class Settipy():
         self.list_sep = {}
         self.dict_seps = {}
         self.should_be_set = {}
+        self.options = {}
+
+        self.test_mode = False
 
     def _to_str(self, v, flag):
         return str(v)
@@ -52,29 +55,31 @@ class Settipy():
         type_ = self.data_type[flag]
         return self.casters[type_](v, flag)
 
-    def _set(self, flag_name, default, message, type_, should):
+    def _set(self, flag_name, default, message, type_, should, options):
         self.data[flag_name] = default
         self.data_type[flag_name] = type_
         self.messages[flag_name] = message
         if should:
             self.should_be_set[flag_name] = default
+        if options:
+            self.options[flag_name] = set(options)
 
-    def set(self, flag_name, default, message, type_="str", should=False):
-        self._set(flag_name, default, message, type_, should)
+    def set(self, flag_name, default, message, type_="str", should=False, options=tuple()):
+        self._set(flag_name, default, message, type_, should, options)
 
-    def set_int(self, flag_name, default, message, should=False):
-        self._set(flag_name, default, message, "int", should)
+    def set_int(self, flag_name, default, message, should=False, options=tuple()):
+        self._set(flag_name, default, message, "int", should, options)
 
-    def set_bool(self, flag_name, default, message, should=False):
-        self._set(flag_name, default, message, "bool", should)
+    def set_bool(self, flag_name, default, message, should=False, options=tuple()):
+        self._set(flag_name, default, message, "bool", should, options)
 
-    def set_list(self, flag_name, default, message, sep=",", should=False):
+    def set_list(self, flag_name, default, message, sep=",", should=False, options=tuple()):
         self.list_sep[flag_name] = sep
-        self._set(flag_name, default, message, "list", should)
+        self._set(flag_name, default, message, "list", should, options)
 
-    def set_dict(self, flag_name, default, message, sep=",", key_sep=":", item_sep=";", should=False):
+    def set_dict(self, flag_name, default, message, sep=",", key_sep=":", item_sep=";", should=False, options=tuple()):
         self.dict_seps[flag_name] = item_sep, key_sep, sep
-        self._set(flag_name, default, message, "dict", should)
+        self._set(flag_name, default, message, "dict", should, options)
 
     def get(self, k):
         return self.data[k]
@@ -117,7 +122,7 @@ class Settipy():
             value, found = self._get_env_var(flag)
             if found:
                 self.should_be_set.pop(flag, None)
-                self.data[flag] = self._cast(value, flag)
+                self.data[flag] =self._cast(value, flag)
 
     def _handle_cli_vars(self):
         for flag in self.data.keys():
@@ -136,19 +141,46 @@ class Settipy():
             sys.exit()
 
     def _handle_should(self):
+        """If value "should" be set, we expect the value or exit the program with error.
+        This will allow devs, admins to handle the issue at startup.
+        """
         if not self.should_be_set:
-            return
+            return True
 
         for flag, value in self.should_be_set.items():
-            message = self.messages[flag]
-            print(f"flag: {flag} {message}: should be set")
-        sys.exit(1)
+            if not self.test_mode:
+                message = self.messages[flag]
+                print(f"flag: {flag} {message}: should be set")
+
+        return False
+
+    def _handle_options(self):
+        succeded = True
+        if not self.options:
+            return succeded
+
+        for flag, allowed_options in self.options.items():
+            value = self.data[flag]
+            if value not in allowed_options:
+                succeded = False
+                if not self.test_mode:
+                    print(f"flag: {flag} {value}: is not part of allowed options[")
+        return succeded
 
     def parse(self):
+        if self.parsed:
+            raise Exception("There is a saying... If you're parsed you can't be parsed again")
+
         self._handle_help()
         self._handle_env_vars()
         self._handle_cli_vars()
-        self._handle_should()
+        succeded = self._handle_should()
+        succeded = succeded and self._handle_options()
+        if not succeded:
+            if self.test_mode:
+                raise Exception
+            sys.exit(1)
+
         self.parsed = True
 
 
