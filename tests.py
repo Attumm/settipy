@@ -133,6 +133,27 @@ class TestFeatures(unittest.TestCase):
                 with self.assertRaises(KeyError):
                     setpy.get(flag_name)
 
+    def test_var_should_be_set_and_is_env(self):
+        setpy = settipy.settipy
+        setpy.test_mode = True
+
+        cli_value = "value_set_with_cli"
+        env_value = "value_set_with_env"
+        flag_name = "FOOBAR"
+        patched_argv = ["./foo.py", "--something", cli_value]
+        patched_environ = {flag_name: env_value}
+
+        with mock.patch.object(sys, "argv", patched_argv):
+            with mock.patch.dict(os.environ, patched_environ, clear=True):
+                setpy.set(
+                    flag_name=flag_name,
+                    default="default value for foobar",
+                    message="explain why something is foobar",
+                    should=True
+                )
+                setpy.parse()
+                self.assertEqual(env_value, setpy.get(flag_name))
+
     def test_var_should_be_set(self):
         setpy = settipy.settipy
         setpy.test_mode = True
@@ -176,6 +197,169 @@ class TestFeatures(unittest.TestCase):
 
                 with self.assertRaises(Exception):
                     setpy.parse()
+
+    def test_happy_path_multiple(self):
+        setpy = settipy.settipy
+        setpy.test_mode = True
+
+        cli_value = "cli-set"
+        env_value = "env-set"
+        patched_argv = ["./foo.py", "-a", cli_value]
+        patched_environ = {"b": env_value}
+
+        with mock.patch.object(sys, "argv", patched_argv):
+            with mock.patch.dict(os.environ, patched_environ, clear=True):
+                setpy.set("a", "default a", "msg a")
+                setpy.set("b", "default b", "msg b")
+                setpy.set("c", "default c", "msg c")
+                setpy.set("d", "default d", "msg d")
+                setpy.set("e", "default e", "msg e")
+                setpy.parse()
+
+                self.assertEqual(cli_value, setpy["a"])
+                self.assertEqual(env_value, setpy["b"])
+                self.assertEqual("default c", setpy["c"])
+                self.assertEqual("default d", setpy["d"])
+                self.assertEqual("default e", setpy["e"])
+
+    def test_happy_path_multiple_should(self):
+        setpy = settipy.settipy
+        setpy.test_mode = True
+
+        cli_value = "cli-set"
+        env_value = "env-set"
+        patched_argv = ["./foo.py", "-a", cli_value]
+        patched_environ = {"b": env_value}
+
+        with mock.patch.object(sys, "argv", patched_argv):
+            with mock.patch.dict(os.environ, patched_environ, clear=True):
+                setpy.set("a", "default a", "msg a")
+                setpy.set("b", "default b", "msg b", should=True)
+                setpy.set("c", "default c", "msg c")
+                setpy.set("d", "default d", "msg d")
+                setpy.set("e", "default e", "msg e")
+                setpy.parse()
+
+                self.assertEqual(cli_value, setpy["a"])
+                self.assertEqual(env_value, setpy["b"])
+                self.assertEqual("default c", setpy["c"])
+                self.assertEqual("default d", setpy["d"])
+                self.assertEqual("default e", setpy["e"])
+
+    def test_happy_path_multiple_should_if(self):
+        setpy = settipy.settipy
+        setpy.test_mode = True
+
+        cli_value = "cli-set"
+        env_value = "env-set"
+        patched_argv = ["./foo.py", "-a", cli_value]
+        patched_environ = {"b": env_value}
+
+        with mock.patch.object(sys, "argv", patched_argv):
+            with mock.patch.dict(os.environ, patched_environ, clear=True):
+                setpy.set("a", "default a", "msg a")
+                setpy.set("b", "default b", "msg b", should_if=["a"])
+                setpy.set("c", "default c", "msg c")
+                setpy.set("d", "default d", "msg d")
+                setpy.set("e", "default e", "msg e")
+                setpy.parse()
+
+                self.assertEqual(cli_value, setpy["a"])
+                self.assertEqual(env_value, setpy["b"])
+                self.assertEqual("default c", setpy["c"])
+                self.assertEqual("default d", setpy["d"])
+                self.assertEqual("default e", setpy["e"])
+
+    def test_multiple_should_if(self):
+        setpy = settipy.settipy
+        setpy.test_mode = True
+
+        cli_value = "cli-set"
+        env_value = "env-set"
+        patched_argv = ["./foo.py", "-a", cli_value]
+        patched_environ = {"b": env_value}
+
+        with mock.patch.object(sys, "argv", patched_argv):
+            with mock.patch.dict(os.environ, patched_environ, clear=True):
+                setpy.set("a", "default a", "msg a")
+                setpy.set("b", "default b", "msg b")
+                setpy.set("c", "default c", "msg c", should_if=["b"])
+                setpy.set("d", "default d", "msg d")
+                setpy.set("e", "default e", "msg e")
+
+                with self.assertRaises(Exception):
+                    setpy.parse()
+
+    def test_happy_path_multiple_should_if_fixed(self):
+        setpy = settipy.settipy
+        setpy.test_mode = True
+
+        cli_value = "cli-set"
+        env_value = "env-set"
+        env_value_2 = "also-env-set"
+        patched_argv = ["./foo.py", "-a", cli_value]
+        patched_environ = {"b": env_value, "c": env_value_2}
+
+        with mock.patch.object(sys, "argv", patched_argv):
+            with mock.patch.dict(os.environ, patched_environ, clear=True):
+                setpy.set("a", "default a", "msg a")
+                setpy.set("b", "default b", "msg b", should_if=["a"])
+                setpy.set("c", "default c", "msg c", should_if=["b"])
+                setpy.set("d", "default d", "msg d")
+                setpy.set("e", "default e", "msg e")
+                setpy.parse()
+
+                self.assertEqual(cli_value, setpy["a"])
+                self.assertEqual(env_value, setpy["b"])
+                self.assertEqual(env_value_2, setpy["c"])
+                self.assertEqual("default d", setpy["d"])
+                self.assertEqual("default e", setpy["e"])
+
+    def test_multiple_should_if_multiple(self):
+        setpy = settipy.settipy
+        setpy.test_mode = True
+
+        cli_value = "cli-set"
+        env_value = "env-set"
+        env_value_2 = "also-env-set"
+        patched_argv = ["./foo.py", "-a", cli_value]
+        patched_environ = {"b": env_value, "c": env_value_2}
+
+        with mock.patch.object(sys, "argv", patched_argv):
+            with mock.patch.dict(os.environ, patched_environ, clear=True):
+                setpy.set("a", "default a", "msg a")
+                setpy.set("b", "default b", "msg b", should_if=["a"])
+                setpy.set("c", "default c", "msg c", should_if=["b"])
+                setpy.set("d", "default d", "msg d", should_if=["a", "b", "c"])
+                setpy.set("e", "default e", "msg e")
+                with self.assertRaises(Exception):
+                    setpy.parse()
+
+    def test_happy_path_multiple_should_if_multiple_fixed(self):
+        setpy = settipy.settipy
+        setpy.test_mode = True
+
+        cli_value = "cli-set"
+        cli_value_2 = "also-cli-set"
+        cli_value_3 = "also-cli-set-too"
+        env_value = "env-set"
+        patched_argv = ["./foo.py", "-a", cli_value, "--c", cli_value_2, "-d",  cli_value_3]
+        patched_environ = {"b": env_value}
+
+        with mock.patch.object(sys, "argv", patched_argv):
+            with mock.patch.dict(os.environ, patched_environ, clear=True):
+                setpy.set("a", "default a", "msg a")
+                setpy.set("b", "default b", "msg b", should_if=["a"])
+                setpy.set("c", "default c", "msg c", should_if=["b"])
+                setpy.set("d", "default d", "msg d", should_if=["a", "b", "c"])
+                setpy.set("e", "default e", "msg e")
+                setpy.parse()
+
+                self.assertEqual(cli_value, setpy["a"])
+                self.assertEqual(env_value, setpy["b"])
+                self.assertEqual(cli_value_2, setpy["c"])
+                self.assertEqual(cli_value_3, setpy["d"])
+                self.assertEqual("default e", setpy["e"])
 
 
 if __name__ == '__main__':

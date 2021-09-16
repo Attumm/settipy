@@ -37,6 +37,10 @@ if __name__ == "__main__":
     # cli argument or `settipy.parse(verbose=True)`
     settipy.set("FOOPASS", "dev_password", "password for DB", password=True)
 
+    # Sometimes a value should be set based on another value.
+    # For example if hamlet is set by env or cli, we also need output file.
+    settipy.set("outputfile", "", "outfile for hamlet", should_if=["hamlet"])
+
     # Run parse after the setting set.
     settipy.parse()
 
@@ -45,6 +49,7 @@ if __name__ == "__main__":
     print("foobar =", foobar)
     print("answer to the universe =", settipy.get("answer_to_the_universe"))
     print("to be or not to be? =", settipy.get("hamlet"))
+    print("output file for hamlet =", settipy.get("outputfile"))
     print("list of abc", settipy.get("abc"))
     print("dict with lists", settipy.get("foodict"))
 

@@ -17,6 +17,7 @@ class Settipy():
         self.data = {}
         self.data_type = {}
         self.messages = {}
+        self.data_set = set()
         self.truthy = {"y", "yes", "true", ""}
         self.casters = {
             "str": self._to_str,
@@ -28,6 +29,7 @@ class Settipy():
         self.list_sep = {}
         self.dict_seps = {}
         self.should_be_set = {}
+        self.conditional_should = {}
         self.options = {}
         self.password_fields = {}
 
@@ -60,7 +62,7 @@ class Settipy():
         type_ = self.data_type[flag]
         return self.casters[type_](v, flag)
 
-    def _set(self, flag_name, default, message, type_, should, options, password):
+    def _set(self, flag_name, default, message, type_, should, should_if, options, password):
         self.data[flag_name] = default
         self.data_type[flag_name] = type_
         self.messages[flag_name] = message
@@ -70,23 +72,25 @@ class Settipy():
             self.options[flag_name] = set(options)
         if password:
             self.password_fields[flag_name] = True
+        if should_if:
+            self.conditional_should[flag_name] = set(should_if)
 
-    def set(self, flag_name, default, message, type_="str", should=False, options=tuple(), password=False):
-        self._set(flag_name, default, message, type_, should, options, password)
+    def set(self, flag_name, default, message, type_="str", should=False, should_if=tuple(), options=tuple(), password=False):
+        self._set(flag_name, default, message, type_, should, should_if, options, password)
 
-    def set_int(self, flag_name, default, message, should=False, options=tuple(), password=False):
-        self._set(flag_name, default, message, "int", should, options, password)
+    def set_int(self, flag_name, default, message, should=False, should_if=tuple(), options=tuple(), password=False):
+        self._set(flag_name, default, message, "int", should, should_if, options, password)
 
-    def set_bool(self, flag_name, default, message, should=False, options=tuple(), password=False):
-        self._set(flag_name, default, message, "bool", should, options, password)
+    def set_bool(self, flag_name, default, message, should=False, should_if=tuple(), options=tuple(), password=False):
+        self._set(flag_name, default, message, "bool", should, should_if, options, password)
 
-    def set_list(self, flag_name, default, message, sep=",", should=False, options=tuple(), password=False):
+    def set_list(self, flag_name, default, message, sep=",", should=False, should_if=tuple(), options=tuple(), password=False):
         self.list_sep[flag_name] = sep
-        self._set(flag_name, default, message, "list", should, options, password)
+        self._set(flag_name, default, message, "list", should, should_if, options, password)
 
-    def set_dict(self, flag_name, default, message, sep=",", key_sep=":", item_sep=";", should=False, options=tuple(), password=False):
+    def set_dict(self, flag_name, default, message, sep=",", key_sep=":", item_sep=";", should=False, should_if=tuple(), options=tuple(), password=False):
         self.dict_seps[flag_name] = item_sep, key_sep, sep
-        self._set(flag_name, default, message, "dict", should, options, password)
+        self._set(flag_name, default, message, "dict", should, should_if, options, password)
 
     def get(self, k):
         return self.data[k]
@@ -129,6 +133,7 @@ class Settipy():
             value, found = self._get_env_var(flag)
             if found:
                 self.should_be_set.pop(flag, None)
+                self.data_set.add(flag)
                 self.data[flag] = self._cast(value, flag)
 
     def _handle_cli_vars(self):
@@ -136,6 +141,7 @@ class Settipy():
             value, found = self._get_cli_var(flag)
             if found:
                 self.should_be_set.pop(flag, None)
+                self.data_set.add(flag)
                 self.data[flag] = self._cast(value, flag)
 
     def _handle_help(self):
@@ -161,6 +167,23 @@ class Settipy():
 
         return False
 
+    def _handle_conditional_should(self):
+        """If value "should" be set, we expect the value or exit the program with error.
+        This will allow devs, admins to handle the issue at startup.
+        """
+        success = True
+        if not self.conditional_should:
+            return success
+
+        for flag, value in self.conditional_should.items():
+            if flag in self.data_set:
+                continue
+            if value.issubset(self.data_set):
+                success = False
+                if not self.test_mode:
+                    print(f"flag: {flag} if one of the following flags are set then this flag must be set {value}")
+        return success
+
     def _handle_options(self):
         succeded = True
         if not self.options:
@@ -171,7 +194,7 @@ class Settipy():
             if value not in allowed_options:
                 succeded = False
                 if not self.test_mode:
-                    print(f"flag: {flag} {value}: is not part of allowed options[")
+                    print(f"flag: {flag} {value}: is not part of allowed options")
         return succeded
 
     def _handle_print(self):
@@ -185,11 +208,13 @@ class Settipy():
     def _handle_clean(self):
         self.data_type = None
         self.messages = None
+        self.data_set = None
         self.truthy = None
         self.casters = None
         self.list_sep = None
         self.dict_seps = None
         self.should_be_set = None
+        self.conditional_should = None
         self.options = None
         self.password_fields = None
 
@@ -205,6 +230,7 @@ class Settipy():
         self._handle_env_vars()
         self._handle_cli_vars()
         succeded = self._handle_should()
+        succeded = succeded and self._handle_conditional_should()
         succeded = succeded and self._handle_options()
         if not succeded:
             if self.test_mode:
