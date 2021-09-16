@@ -182,6 +182,17 @@ class Settipy():
                 if not self.password_fields.get(flag):
                     print(f"\t-{flag}: {default}")
 
+    def _handle_clean(self):
+        self.data_type = None
+        self.messages = None
+        self.truthy = None
+        self.casters = None
+        self.list_sep = None
+        self.dict_seps = None
+        self.should_be_set = None
+        self.options = None
+        self.password_fields = None
+
     def parse(self, verbose=False):
         if verbose:
             self.print_at_startup = True
@@ -200,6 +211,7 @@ class Settipy():
                 raise Exception
             sys.exit(1)
 
+        self._handle_clean()
         self.parsed = True
 
 
