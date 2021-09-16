@@ -362,5 +362,124 @@ class TestFeatures(unittest.TestCase):
                 self.assertEqual("default e", setpy["e"])
 
 
+class TestTypes(unittest.TestCase):
+    """
+    Took over the testing style from the official argparse.
+    https://github.com/python/cpython/blob/main/Lib/test/test_argparse.py#L182
+    """
+
+    def setUp(self):
+        importlib.reload(settipy)
+
+    def tearDown(self):
+        pass
+
+    def test_happy_path_all_cli(self):
+        setpy = settipy.settipy
+        setpy.test_mode = True
+
+        expected_str = "foobar"
+        expected_int = 42
+        expected_bool = True
+        expected_list = ["a", "b", "c"]
+        expected_dict = {"foo": "bar", "foo1": "bar1"}
+        expected_dict_list = {
+            "foo": ["bar"],
+            "foo1": ["bar1", "bar2"]
+        }
+
+        cli_str = "foobar"
+        cli_int = "42"
+        cli_bool = "y"
+        cli_list = "a,b,c"
+        cli_dict = "foo:bar;foo1:bar1"
+        cli_dict_list = "foo:bar;foo1:bar1,bar2"
+        patched_argv = [
+            "./foo.py",
+            "-a", cli_str,
+            "-b", cli_int,
+            "-c", cli_bool,
+            "-d", cli_list,
+            "-e", cli_dict,
+            "-f", cli_dict_list,
+        ]
+        patched_environ = {}
+
+        with mock.patch.object(sys, "argv", patched_argv):
+            with mock.patch.dict(os.environ, patched_environ, clear=True):
+                setpy.set("a", "default a", "msg a")
+                setpy.set_int("b", 2, "msg b")
+                setpy.set_bool("c", False, "msg c")
+                setpy.set_list("d", [], "msg d")
+                setpy.set_dict("e", {}, "msg e")
+                setpy.set_dict_list("f", {}, "msg f")
+                setpy.parse()
+
+                self.assertEqual(expected_str, setpy["a"])
+                self.assertEqual(expected_int, setpy["b"])
+                self.assertEqual(expected_bool, setpy["c"])
+
+                # Assert list
+                self.assertCountEqual(expected_list, setpy["d"])
+                self.assertListEqual(expected_list, setpy["d"])
+
+                # Assert Dict
+                self.assertDictEqual(expected_dict, setpy["e"])
+                self.assertDictEqual(expected_dict_list, setpy["f"])
+
+    def test_happy_path_all_env(self):
+        setpy = settipy.settipy
+        setpy.test_mode = True
+
+        expected_str = "foobar"
+        expected_int = 42
+        expected_bool = True
+        expected_list = ["a", "b", "c"]
+        expected_dict = {"foo": "bar", "foo1": "bar1"}
+        expected_dict_list = {
+            "foo": ["bar"],
+            "foo1": ["bar1", "bar2"]
+        }
+
+        env_str = "foobar"
+        env_int = "42"
+        env_bool = "y"
+        env_list = "a,b,c"
+        env_dict = "foo:bar;foo1:bar1"
+        env_dict_list = "foo:bar;foo1:bar1,bar2"
+        patched_argv = [
+            "./foo.py"
+        ]
+        patched_environ = {
+            "a": env_str,
+            "b": env_int,
+            "c": env_bool,
+            "d": env_list,
+            "e": env_dict,
+            "f": env_dict_list,
+        }
+
+        with mock.patch.object(sys, "argv", patched_argv):
+            with mock.patch.dict(os.environ, patched_environ, clear=True):
+                setpy.set("a", "default a", "msg a")
+                setpy.set_int("b", 2, "msg b")
+                setpy.set_bool("c", False, "msg c")
+                setpy.set_list("d", [], "msg d")
+                setpy.set_dict("e", {}, "msg e")
+                setpy.set_dict_list("f", {}, "msg f")
+                setpy.parse()
+
+                self.assertEqual(expected_str, setpy["a"])
+                self.assertEqual(expected_int, setpy["b"])
+                self.assertEqual(expected_bool, setpy["c"])
+
+                # Assert list
+                self.assertCountEqual(expected_list, setpy["d"])
+                self.assertListEqual(expected_list, setpy["d"])
+
+                # Assert Dict
+                self.assertDictEqual(expected_dict, setpy["e"])
+                self.assertDictEqual(expected_dict_list, setpy["f"])
+
 if __name__ == '__main__':
     unittest.main()

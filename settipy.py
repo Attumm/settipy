@@ -25,9 +25,11 @@ class Settipy():
             "bool": self._truthiness,
             "list": self._to_list,
             "dict": self._to_dict,
+            "dict_list": self._to_dict_list,
         }
         self.list_sep = {}
         self.dict_seps = {}
+        self.dict_list_seps = {}
         self.should_be_set = {}
         self.conditional_should = {}
         self.options = {}
@@ -48,12 +50,21 @@ class Settipy():
         return v.split(self.list_sep[flag])
 
     def _to_dict(self, v, flag):
-        item_sep, key_sep, sep = self.dict_seps[flag]
-        d = {}
+        item_sep, key_sep = self.dict_seps[flag]
+        result = {}
+        for item in v.split(item_sep):
+            key, value = item.split(key_sep)
+            result[key] = value
+
+        return result
+
+    def _to_dict_list(self, v, flag):
+        item_sep, key_sep, sep = self.dict_list_seps[flag]
+        result = {}
         for item in v.split(item_sep):
             key, values = item.split(key_sep)
-            d[key] = values.split(sep)
-        return d
+            result[key] = values.split(sep)
+        return result
 
     def _truthiness(self, v, flag):
         return v in self.truthy
@@ -88,23 +99,27 @@ class Settipy():
         self.list_sep[flag_name] = sep
         self._set(flag_name, default, message, "list", should, should_if, options, password)
 
-    def set_dict(self, flag_name, default, message, sep=",", key_sep=":", item_sep=";", should=False, should_if=tuple(), options=tuple(), password=False):
-        self.dict_seps[flag_name] = item_sep, key_sep, sep
+    def set_dict(self, flag_name, default, message, key_sep=":", item_sep=";", should=False, should_if=tuple(), options=tuple(), password=False):
+        self.dict_seps[flag_name] = item_sep, key_sep
         self._set(flag_name, default, message, "dict", should, should_if, options, password)
+
+    def set_dict_list(self, flag_name, default, message, sep=",", key_sep=":", item_sep=";", should=False, should_if=tuple(), options=tuple(), password=False):
+        self.dict_list_seps[flag_name] = item_sep, key_sep, sep
+        self._set(flag_name, default, message, "dict_list", should, should_if, options, password)
 
     def get(self, k):
         return self.data[k]
 
-    def get_int(self, k):
+    def get_int(self, k: str) -> int:
         return self.data[k]
 
-    def get_bool(self, k):
+    def get_bool(self, k: str) -> bool:
         return self.data[k]
 
-    def get_list(self, k):
+    def get_list(self, k: str) -> list:
         return self.data[k]
 
-    def get_dict(self, k):
+    def get_dict(self, k: str) -> dict:
         return self.data[k]
 
     def _get_env_var(self, flag):
@@ -216,12 +231,13 @@ class Settipy():
         self.casters = None
         self.list_sep = None
         self.dict_seps = None
+        self.dict_list_seps = None
         self.should_be_set = None
         self.conditional_should = None
         self.options = None
         self.password_fields = None
 
-    def parse(self, verbose=False):
+    def parse(self, verbose: bool = {}) -> None:
         if verbose:
             self.print_at_startup = True
 
