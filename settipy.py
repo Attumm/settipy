@@ -132,7 +132,6 @@ class Settipy():
         for flag in self.data.keys():
             value, found = self._get_env_var(flag)
             if found:
-                self.should_be_set.pop(flag, None)
                 self.data_set.add(flag)
                 self.data[flag] = self._cast(value, flag)
 
@@ -140,7 +139,6 @@ class Settipy():
         for flag in self.data.keys():
             value, found = self._get_cli_var(flag)
             if found:
-                self.should_be_set.pop(flag, None)
                 self.data_set.add(flag)
                 self.data[flag] = self._cast(value, flag)
 
@@ -157,15 +155,20 @@ class Settipy():
         """If value "should" be set, we expect the value or exit the program with error.
         This will allow devs, admins to handle the issue at startup.
         """
+
+        success = True
         if not self.should_be_set:
-            return True
+            return success
 
         for flag, value in self.should_be_set.items():
+            if flag in self.data_set:
+                continue
+            success = False
             if not self.test_mode:
                 message = self.messages[flag]
                 print(f"flag: {flag} {message}: should be set")
 
-        return False
+        return success
 
     def _handle_conditional_should(self):
         """If value "should" be set, we expect the value or exit the program with error.
@@ -185,17 +188,17 @@ class Settipy():
         return success
 
     def _handle_options(self):
-        succeded = True
+        success = True
         if not self.options:
-            return succeded
+            return success
 
         for flag, allowed_options in self.options.items():
             value = self.data[flag]
             if value not in allowed_options:
-                succeded = False
+                success = False
                 if not self.test_mode:
                     print(f"flag: {flag} {value}: is not part of allowed options")
-        return succeded
+        return success
 
     def _handle_print(self):
         if self.print_at_startup or "--settipy-verbose" in sys.argv:
