@@ -481,5 +481,43 @@ class TestTypes(unittest.TestCase):
                 self.assertDictEqual(expected_dict, setpy["e"])
                 self.assertDictEqual(expected_dict_list, setpy["f"])
 
+
+class TestEncrypted(unittest.TestCase):
+
+    def setUp(self):
+        importlib.reload(settipy)
+
+    def tearDown(self):
+        pass
+
+    def test_happy_path_encrypted(self):
+        setpy = settipy.settipy
+
+        expected = "super_secret"
+
+        """
+        $ python3 settipy.py --settipy-mode generate
+        assword:
+
+        cli: ObBlV94VqxPkyuVkoh5axrb37yjsGOUD
+        env: 2c08897afc32cdd8429d49f377a556b810a4a332325bd5656464fa1c
+
+        """
+
+        patched_argv = ["./foo.py", "--FOOBAR", "ObBlV94VqxPkyuVkoh5axrb37yjsGOUD"]
+        patched_environ = {"FOOBAR": "2c08897afc32cdd8429d49f377a556b810a4a332325bd5656464fa1c"}
+
+        with mock.patch.object(sys, "argv", patched_argv):
+            with mock.patch.dict(os.environ, patched_environ, clear=True):
+                setpy.set(
+                    flag_name="FOOBAR",
+                    default="default value for foobar",
+                    message="explain why something is foobar",
+                    encrypted=True,
+                )
+                setpy.parse()
+                self.assertEqual(expected, setpy.get_encrypted("FOOBAR"))
+
+
 if __name__ == '__main__':
     unittest.main()
