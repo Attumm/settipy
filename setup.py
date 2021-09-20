@@ -14,8 +14,9 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
 
-    version='1.9.0',
+    version='1.10.0',
     py_modules=['settipy'],
+    install_requires=['cryptography'],
     license='MIT',
 
     url='https://github.com/Attumm/settipy',
