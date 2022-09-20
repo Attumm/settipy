@@ -123,7 +123,7 @@ use the salt and pepper to decrypt the password. Since this will properly use ex
 and 2.0 will start to use packages.
 * Add Typing
 * Use logging
-
+* Add to Readme features such as 'should_if', 'options'.
 
 ## License
 
