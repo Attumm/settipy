@@ -124,6 +124,7 @@ and 2.0 will start to use packages.
 * Add Typing
 * Use logging
 * Add to Readme features such as 'should_if', 'options'.
+* Add options that are available to user, when input is not part of options.
 
 ## License
 
