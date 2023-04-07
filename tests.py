@@ -497,7 +497,7 @@ class TestEncrypted(unittest.TestCase):
 
         """
         $ python3 settipy.py --settipy-mode generate
-        assword:
+        password:
 
         cli: ObBlV94VqxPkyuVkoh5axrb37yjsGOUD
         env: 2c08897afc32cdd8429d49f377a556b810a4a332325bd5656464fa1c
