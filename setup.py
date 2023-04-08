@@ -14,7 +14,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
 
-    version='1.10.0',
+    version='1.10.1',
     py_modules=['settipy'],
     install_requires=['cryptography'],
     license='MIT',
