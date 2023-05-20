@@ -126,9 +126,9 @@ While dedicated security solutions such as Vault provide more comprehensive prot
 Settipy's encryption offers a significantly more secure method of storing sensitive information compared to storing it in plaintext. In some scenarios, this secret splitting technique can provide an adequate level of security, making it a practical and accessible choice for developers.
 By dividing a password or other sensitive data into two separate parts, Settipy ensures that an attacker would need access to both the process arguments and environment variables to reconstruct the full password. This approach effectively reduces the risk of unauthorized access and presents a user-friendly solution for securing sensitive data in your application.
 
-    No plaintext storage: Sensitive information is divided into separate parts, ensuring that no plaintext version of the data is stored in any file or memory location.
-    Enhanced security: Storing parts of sensitive data in different locations makes it more difficult for attackers to access the full password or sensitive data, as they would need to compromise both the environment variables and command-line arguments.
-    Simple and Fast to implement: As such
+* No plaintext storage: Sensitive information is divided into separate parts, ensuring that no plaintext version of the data is stored in any file or memory location.
+* Enhanced security: Storing parts of sensitive data in different locations makes it more difficult for attackers to access the full password or sensitive data, as they would need to compromise both the environment variables and command-line arguments.
+* Simple and Fast to implement
 
 
 Run the following command to get a prompt for your password.
